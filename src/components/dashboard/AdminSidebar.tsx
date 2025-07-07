@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Calendar, 
   Users, 
@@ -11,7 +11,10 @@ import {
   Package,
   CreditCard,
   HelpCircle,
-  User
+  User,
+  LogOut,
+  Bell,
+  Search
 } from 'lucide-react';
 import {
   Sidebar,
@@ -24,9 +27,12 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const menuItems = [
     { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -38,19 +44,36 @@ const AdminSidebar = () => {
     { title: 'Settings', url: '/dashboard/settings', icon: Settings },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const handleSignOut = () => {
+    console.log('User signed out');
+    navigate('/signin');
+  };
 
   return (
-    <Sidebar className="w-64 border-r border-slate-200 bg-white shadow-sm">
-      <SidebarHeader className="px-6 py-6 border-b border-slate-100">
-        <div className="flex items-center space-x-3">
-          <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-            <Clock className="h-6 w-6 text-white" />
+    <Sidebar className="w-80 border-r border-gray-200 bg-white shadow-lg">
+      <SidebarHeader className="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            <div className="h-12 w-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Clock className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">FlowTime</h1>
+              <p className="text-xs text-gray-500 font-medium">Admin Dashboard</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-slate-900">FlowTime</h1>
-            <p className="text-xs text-slate-500 font-medium">Admin Dashboard</p>
-          </div>
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Bell className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input 
+            placeholder="Search..." 
+            className="pl-10 h-9 bg-white/70 border-gray-200 focus:bg-white"
+          />
         </div>
       </SidebarHeader>
 
@@ -66,8 +89,8 @@ const AdminSidebar = () => {
                       className={({ isActive }) =>
                         `group flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                           isActive
-                            ? 'bg-gradient-to-r from-blue-50 to-blue-100 text-blue-700 border border-blue-200 shadow-sm'
-                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 hover:shadow-sm'
+                            ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg transform scale-[1.02]'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 hover:shadow-md'
                         }`
                       }
                     >
@@ -75,12 +98,12 @@ const AdminSidebar = () => {
                         <>
                           <item.icon 
                             className={`h-5 w-5 transition-colors duration-200 ${
-                              isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-slate-600'
+                              isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'
                             }`}
                           />
                           <span className="font-medium">{item.title}</span>
                           {isActive && (
-                            <div className="ml-auto h-2 w-2 bg-blue-500 rounded-full animate-pulse" />
+                            <div className="ml-auto h-2 w-2 bg-white rounded-full" />
                           )}
                         </>
                       )}
@@ -93,37 +116,59 @@ const AdminSidebar = () => {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-4 py-6 border-t border-slate-100 bg-slate-50/50">
-        <div className="space-y-2">
-          <NavLink
-            to="/dashboard/help"
-            className={({ isActive }) =>
-              `flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-gradient-to-r from-green-50 to-green-100 text-green-700 border border-green-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-sm'
-              }`
-            }
-          >
-            <HelpCircle className="h-5 w-5" />
-            <span>Help & Support</span>
-          </NavLink>
-          
-          <NavLink
-            to="/dashboard/profile"
-            className={({ isActive }) =>
-              `flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-white hover:shadow-sm'
-              }`
-            }
-          >
-            <div className="h-6 w-6 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
-              <User className="h-3 w-3 text-white" />
+      <SidebarFooter className="px-4 py-6 border-t border-gray-100 bg-gray-50/50">
+        <div className="space-y-3">
+          {/* User Profile */}
+          <div className="flex items-center space-x-3 px-4 py-3 rounded-xl bg-white shadow-sm border border-gray-200">
+            <div className="h-10 w-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+              <User className="h-5 w-5 text-white" />
             </div>
-            <span>Your Profile</span>
-          </NavLink>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">Dr. Sarah Johnson</p>
+              <p className="text-xs text-gray-500">sarah@flowtime.com</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="space-y-2">
+            <NavLink
+              to="/dashboard/help"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-green-100 text-green-700 border border-green-200'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-sm'
+                }`
+              }
+            >
+              <HelpCircle className="h-5 w-5" />
+              <span>Help & Support</span>
+            </NavLink>
+            
+            <NavLink
+              to="/dashboard/profile"
+              className={({ isActive }) =>
+                `flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-sm'
+                }`
+              }
+            >
+              <User className="h-5 w-5" />
+              <span>Your Profile</span>
+            </NavLink>
+
+            {/* Sign Out Button */}
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              className="w-full justify-start px-4 py-3 h-auto text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition-all duration-200"
+            >
+              <LogOut className="h-5 w-5 mr-3" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

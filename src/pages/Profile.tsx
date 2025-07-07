@@ -3,125 +3,358 @@ import React, { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Camera, Save, Edit, Settings, Clock, Calendar, User, Shield, Bell } from 'lucide-react';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
     name: 'Dr. Sarah Johnson',
     email: 'sarah.johnson@example.com',
+    phone: '+1 (555) 123-4567',
     timeZone: 'America/New_York',
-    publicBookingLink: 'flowtime.com/dr-sarah-johnson'
+    publicBookingLink: 'flowtime.com/dr-sarah-johnson',
+    specialty: 'Cardiology',
+    experience: '12 years',
+    bio: 'Experienced cardiologist specializing in preventive cardiology and heart disease management.',
+    location: 'New York, NY'
   });
+
+  const stats = [
+    { label: 'Total Patients', value: '1,234', color: 'bg-blue-500' },
+    { label: 'Appointments', value: '5,678', color: 'bg-green-500' },
+    { label: 'Years Experience', value: '12', color: 'bg-purple-500' },
+    { label: 'Rating', value: '4.9', color: 'bg-yellow-500' }
+  ];
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AdminSidebar />
         <main className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="mb-6 flex items-center space-x-4">
-              <div className="h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                SJ
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{profileData.name}</h1>
-                <p className="text-gray-600">{profileData.email}</p>
+          <div className="max-w-6xl mx-auto">
+            {/* Header */}
+            <div className="mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
+                  <p className="text-gray-600 mt-1">Manage your account and preferences</p>
+                </div>
+                <Button className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Changes
+                </Button>
               </div>
             </div>
 
-            <Tabs defaultValue="about" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-6">
-                <TabsTrigger value="about">About</TabsTrigger>
-                <TabsTrigger value="integrations">Integrations</TabsTrigger>
-                <TabsTrigger value="services">Services</TabsTrigger>
-                <TabsTrigger value="hours">Working Hours</TabsTrigger>
-                <TabsTrigger value="breaks">Breaks</TabsTrigger>
-                <TabsTrigger value="timeoff">Time Off</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="about">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Profile Information</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="profileName">Profile Name</Label>
-                      <Input
-                        id="profileName"
-                        value={profileData.name}
-                        onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={profileData.email}
-                        onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="timeZone">Time Zone</Label>
-                      <Select value={profileData.timeZone} onValueChange={(value) => setProfileData({ ...profileData, timeZone: value })}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
-                          <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
-                          <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="bookingLink">Public Booking Link</Label>
-                      <Input
-                        id="bookingLink"
-                        value={profileData.publicBookingLink}
-                        onChange={(e) => setProfileData({ ...profileData, publicBookingLink: e.target.value })}
-                      />
+            {/* Profile Header Card */}
+            <Card className="mb-6">
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-6">
+                  <div className="relative">
+                    <Avatar className="h-24 w-24">
+                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold">
+                        SJ
+                      </AvatarFallback>
+                    </Avatar>
+                    <Button size="sm" className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0">
+                      <Camera className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-bold text-gray-900">{profileData.name}</h2>
+                    <p className="text-gray-600">{profileData.specialty}</p>
+                    <p className="text-sm text-gray-500 mt-1">{profileData.email}</p>
+                    <div className="flex items-center space-x-4 mt-3">
+                      <Badge variant="secondary" className="bg-green-100 text-green-700">
+                        Active
+                      </Badge>
+                      <Badge variant="outline">
+                        {profileData.experience} Experience
+                      </Badge>
                     </div>
                   </div>
-                  <Button className="mt-4">Save Changes</Button>
+                  <div className="grid grid-cols-2 gap-4">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className={`w-3 h-3 ${stat.color} rounded-full mx-auto mb-1`}></div>
+                        <p className="text-lg font-bold text-gray-900">{stat.value}</p>
+                        <p className="text-xs text-gray-600">{stat.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Tabs defaultValue="personal" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-6 bg-white border">
+                <TabsTrigger value="personal" className="flex items-center space-x-2">
+                  <User className="h-4 w-4" />
+                  <span>Personal</span>
+                </TabsTrigger>
+                <TabsTrigger value="professional" className="flex items-center space-x-2">
+                  <Settings className="h-4 w-4" />
+                  <span>Professional</span>
+                </TabsTrigger>
+                <TabsTrigger value="availability" className="flex items-center space-x-2">
+                  <Clock className="h-4 w-4" />
+                  <span>Availability</span>
+                </TabsTrigger>
+                <TabsTrigger value="notifications" className="flex items-center space-x-2">
+                  <Bell className="h-4 w-4" />
+                  <span>Notifications</span>
+                </TabsTrigger>
+                <TabsTrigger value="security" className="flex items-center space-x-2">
+                  <Shield className="h-4 w-4" />
+                  <span>Security</span>
+                </TabsTrigger>
+                <TabsTrigger value="integrations" className="flex items-center space-x-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>Integrations</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="personal">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <User className="h-5 w-5" />
+                        <span>Personal Information</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input id="firstName" value="Sarah" />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input id="lastName" value="Johnson" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email Address</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location</Label>
+                        <Input
+                          id="location"
+                          value={profileData.location}
+                          onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Bio & Description</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="bio">Professional Bio</Label>
+                        <textarea
+                          id="bio"
+                          rows={6}
+                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          value={profileData.bio}
+                          onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
+                          placeholder="Tell patients about your background and expertise..."
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="timeZone">Time Zone</Label>
+                        <Select value={profileData.timeZone} onValueChange={(value) => setProfileData({ ...profileData, timeZone: value })}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                            <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                            <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="professional">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Professional Details</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="specialty">Specialty</Label>
+                          <Select value={profileData.specialty} onValueChange={(value) => setProfileData({ ...profileData, specialty: value })}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Cardiology">Cardiology</SelectItem>
+                              <SelectItem value="Neurology">Neurology</SelectItem>
+                              <SelectItem value="Pediatrics">Pediatrics</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="experience">Years of Experience</Label>
+                          <Input
+                            id="experience"
+                            value={profileData.experience}
+                            onChange={(e) => setProfileData({ ...profileData, experience: e.target.value })}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="bookingLink">Public Booking Link</Label>
+                          <Input
+                            id="bookingLink"
+                            value={profileData.publicBookingLink}
+                            onChange={(e) => setProfileData({ ...profileData, publicBookingLink: e.target.value })}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-4">
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h4 className="font-medium text-blue-900 mb-2">Booking Settings</h4>
+                          <p className="text-sm text-blue-700 mb-3">Configure how patients can book appointments with you.</p>
+                          <Button variant="outline" size="sm" className="border-blue-300 text-blue-700">
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Booking Settings
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="availability">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Working Hours & Availability</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-600 mb-4">Set your availability for patient bookings.</p>
+                    <div className="space-y-4">
+                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map((day) => (
+                        <div key={day} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div className="flex items-center space-x-4">
+                            <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600" />
+                            <span className="font-medium">{day}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Input type="time" defaultValue="09:00" className="w-24" />
+                            <span>to</span>
+                            <Input type="time" defaultValue="17:00" className="w-24" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="notifications">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Notification Preferences</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {[
+                        { label: 'New appointment bookings', description: 'Get notified when patients book appointments' },
+                        { label: 'Appointment reminders', description: 'Receive reminders before appointments' },
+                        { label: 'Payment notifications', description: 'Get notified about payment updates' },
+                        { label: 'Calendar sync', description: 'Sync appointments with your calendar' }
+                      ].map((item, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                          <div>
+                            <p className="font-medium">{item.label}</p>
+                            <p className="text-sm text-gray-600">{item.description}</p>
+                          </div>
+                          <input type="checkbox" defaultChecked className="h-4 w-4 text-blue-600" />
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="security">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Security Settings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-6">
+                      <div className="space-y-4">
+                        <h4 className="font-medium">Change Password</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="currentPassword">Current Password</Label>
+                            <Input id="currentPassword" type="password" />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="newPassword">New Password</Label>
+                            <Input id="newPassword" type="password" />
+                          </div>
+                        </div>
+                        <Button variant="outline">Update Password</Button>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
               </TabsContent>
 
               <TabsContent value="integrations">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Integrations</h3>
-                  <p className="text-gray-600">Connect with your favorite tools and services.</p>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="services">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Services</h3>
-                  <p className="text-gray-600">Manage your bookable services and pricing.</p>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="hours">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Working Hours</h3>
-                  <p className="text-gray-600">Set your availability for bookings.</p>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="breaks">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Breaks</h3>
-                  <p className="text-gray-600">Configure break times between appointments.</p>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="timeoff">
-                <Card className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Time Off</h3>
-                  <p className="text-gray-600">Manage your vacation and unavailable periods.</p>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Calendar & Integrations</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <p className="text-gray-600">Connect with your favorite tools and services.</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="p-4 border rounded-lg">
+                          <h4 className="font-medium mb-2">Google Calendar</h4>
+                          <p className="text-sm text-gray-600 mb-3">Sync your appointments with Google Calendar</p>
+                          <Button variant="outline" size="sm">Connect</Button>
+                        </div>
+                        <div className="p-4 border rounded-lg">
+                          <h4 className="font-medium mb-2">Outlook Calendar</h4>
+                          <p className="text-sm text-gray-600 mb-3">Sync your appointments with Outlook</p>
+                          <Button variant="outline" size="sm">Connect</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>
