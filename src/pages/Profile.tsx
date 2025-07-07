@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -9,8 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Camera, Save, Edit, Settings, Clock, Calendar, User, Shield, Bell } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Camera, Save, Edit, Settings, Clock, Calendar, User, Shield, Bell, Upload, X } from 'lucide-react';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -25,6 +25,29 @@ const Profile = () => {
     location: 'New York, NY'
   });
 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [showImageUpload, setShowImageUpload] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target?.result as string);
+        setShowImageUpload(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setProfileImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const stats = [
     { label: 'Total Patients', value: '1,234', color: 'bg-blue-500' },
     { label: 'Appointments', value: '5,678', color: 'bg-green-500' },
@@ -36,7 +59,7 @@ const Profile = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AdminSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="mb-8">
@@ -58,13 +81,85 @@ const Profile = () => {
                 <div className="flex items-center space-x-6">
                   <div className="relative">
                     <Avatar className="h-24 w-24">
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold">
-                        SJ
-                      </AvatarFallback>
+                      {profileImage ? (
+                        <AvatarImage src={profileImage} alt="Profile" />
+                      ) : (
+                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-bold">
+                          SJ
+                        </AvatarFallback>
+                      )}
                     </Avatar>
-                    <Button size="sm" className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0">
-                      <Camera className="h-4 w-4" />
-                    </Button>
+                    <Dialog open={showImageUpload} onOpenChange={setShowImageUpload}>
+                      <DialogTrigger asChild>
+                        <Button size="sm" className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0">
+                          <Camera className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Update Profile Picture</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {profileImage && (
+                            <div className="text-center">
+                              <Avatar className="h-32 w-32 mx-auto mb-4">
+                                <AvatarImage src={profileImage} alt="Preview" />
+                              </Avatar>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={removeImage}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <X className="h-4 w-4 mr-2" />
+                                Remove Image
+                              </Button>
+                            </div>
+                          )}
+                          
+                          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                            <Upload className="h-8 w-8 text-gray-400 mx-auto mb-4" />
+                            <p className="text-gray-600 mb-4">
+                              Drop your image here, or{' '}
+                              <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="text-blue-600 hover:text-blue-700 font-medium"
+                              >
+                                browse
+                              </button>
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              Supports: JPG, PNG, GIF (max 5MB)
+                            </p>
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                            />
+                          </div>
+
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="outline" 
+                              className="flex-1"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <Upload className="h-4 w-4 mr-2" />
+                              Choose File
+                            </Button>
+                            <Button 
+                              className="flex-1"
+                              onClick={() => setShowImageUpload(false)}
+                              disabled={!profileImage}
+                            >
+                              Save Photo
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <div className="flex-1">
                     <h2 className="text-2xl font-bold text-gray-900">{profileData.name}</h2>

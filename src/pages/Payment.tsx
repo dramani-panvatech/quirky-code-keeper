@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AdminSidebar from '../components/dashboard/AdminSidebar';
@@ -9,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { CreditCard, DollarSign, TrendingUp, Receipt, Plus, Settings, Wallet, Smartphone, Building } from 'lucide-react';
 
 const Payment = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('stripe');
+  const [showAddPaymentMethod, setShowAddPaymentMethod] = useState(false);
 
   const paymentStats = [
     { label: 'Monthly Revenue', value: '$12,540', change: '+15%', color: 'bg-green-500' },
@@ -41,7 +42,7 @@ const Payment = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AdminSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -59,10 +60,119 @@ const Payment = () => {
                   <Receipt className="h-4 w-4 mr-2" />
                   Export
                 </Button>
-                <Button className="bg-gradient-to-r from-green-600 to-emerald-600">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Payment Method
-                </Button>
+                <Dialog open={showAddPaymentMethod} onOpenChange={setShowAddPaymentMethod}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-gradient-to-r from-green-600 to-emerald-600">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Payment Method
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl">
+                    <DialogHeader>
+                      <DialogTitle>Add New Payment Method</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-6">
+                      <div>
+                        <Label className="text-base font-medium mb-4 block">Select Payment Provider</Label>
+                        <div className="grid grid-cols-2 gap-4">
+                          {paymentMethods.map((method) => (
+                            <div
+                              key={method.id}
+                              className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                                selectedPaymentMethod === method.id 
+                                  ? 'border-blue-500 bg-blue-50' 
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                              onClick={() => setSelectedPaymentMethod(method.id)}
+                            >
+                              <div className="flex items-center space-x-3">
+                                <method.icon className="h-6 w-6 text-gray-600" />
+                                <div>
+                                  <h4 className="font-medium">{method.name}</h4>
+                                  <p className="text-sm text-gray-500">{method.fees}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {selectedPaymentMethod === 'stripe' && (
+                        <div className="space-y-4">
+                          <h4 className="font-medium">Stripe Configuration</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="stripePublishable">Publishable Key</Label>
+                              <Input id="stripePublishable" placeholder="pk_test_..." />
+                            </div>
+                            <div>
+                              <Label htmlFor="stripeSecret">Secret Key</Label>
+                              <Input id="stripeSecret" type="password" placeholder="sk_test_..." />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedPaymentMethod === 'paypal' && (
+                        <div className="space-y-4">
+                          <h4 className="font-medium">PayPal Configuration</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="paypalClient">Client ID</Label>
+                              <Input id="paypalClient" placeholder="Your PayPal Client ID" />
+                            </div>
+                            <div>
+                              <Label htmlFor="paypalSecret">Client Secret</Label>
+                              <Input id="paypalSecret" type="password" placeholder="Your PayPal Client Secret" />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedPaymentMethod === 'bank' && (
+                        <div className="space-y-4">
+                          <h4 className="font-medium">Bank Account Details</h4>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="bankName">Bank Name</Label>
+                              <Input id="bankName" placeholder="Bank name" />
+                            </div>
+                            <div>
+                              <Label htmlFor="accountNumber">Account Number</Label>
+                              <Input id="accountNumber" placeholder="Account number" />
+                            </div>
+                            <div>
+                              <Label htmlFor="routingNumber">Routing Number</Label>
+                              <Input id="routingNumber" placeholder="Routing number" />
+                            </div>
+                            <div>
+                              <Label htmlFor="accountType">Account Type</Label>
+                              <Select>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select type" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="checking">Checking</SelectItem>
+                                  <SelectItem value="savings">Savings</SelectItem>
+                                  <SelectItem value="business">Business</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex justify-end space-x-2">
+                        <Button variant="outline" onClick={() => setShowAddPaymentMethod(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={() => setShowAddPaymentMethod(false)}>
+                          Add Payment Method
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
 
@@ -184,45 +294,6 @@ const Payment = () => {
                             <p className="text-sm font-medium text-gray-900">Fees: {method.fees}</p>
                           </div>
                         ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Payment Gateway Configuration</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className="space-y-4">
-                            <h4 className="font-medium">Stripe Configuration</h4>
-                            <div className="space-y-3">
-                              <div>
-                                <Label htmlFor="stripePublishable">Publishable Key</Label>
-                                <Input id="stripePublishable" placeholder="pk_test_..." />
-                              </div>
-                              <div>
-                                <Label htmlFor="stripeSecret">Secret Key</Label>
-                                <Input id="stripeSecret" type="password" placeholder="sk_test_..." />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="space-y-4">
-                            <h4 className="font-medium">PayPal Configuration</h4>
-                            <div className="space-y-3">
-                              <div>
-                                <Label htmlFor="paypalClient">Client ID</Label>
-                                <Input id="paypalClient" placeholder="Your PayPal Client ID" />
-                              </div>
-                              <div>
-                                <Label htmlFor="paypalSecret">Client Secret</Label>
-                                <Input id="paypalSecret" type="password" placeholder="Your PayPal Client Secret" />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <Button>Save Configuration</Button>
                       </div>
                     </CardContent>
                   </Card>

@@ -6,14 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar as CalendarIcon, Plus, Share, ChevronLeft, ChevronRight, Clock, Users, Filter } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const Calendar = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
+  const [showNewAppointment, setShowNewAppointment] = useState(false);
   
   const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const timeSlots = Array.from({ length: 12 }, (_, i) => {
-    const hour = i + 8; // Start from 8 AM
+    const hour = i + 8;
     return hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
   });
   
@@ -25,7 +29,7 @@ const Calendar = () => {
       duration: 60,
       type: 'consultation',
       status: 'confirmed',
-      day: 0 // Monday
+      day: 0
     },
     {
       id: 2,
@@ -34,7 +38,7 @@ const Calendar = () => {
       duration: 30,
       type: 'followup',
       status: 'pending',
-      day: 0 // Monday
+      day: 0
     },
     {
       id: 3,
@@ -43,9 +47,23 @@ const Calendar = () => {
       duration: 90,
       type: 'therapy',
       status: 'confirmed',
-      day: 2 // Wednesday
+      day: 2
     }
   ];
+
+  const goToToday = () => {
+    setSelectedDate(new Date());
+  };
+
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newDate = new Date(selectedDate);
+    if (direction === 'prev') {
+      newDate.setMonth(newDate.getMonth() - 1);
+    } else {
+      newDate.setMonth(newDate.getMonth() + 1);
+    }
+    setSelectedDate(newDate);
+  };
 
   const formatDate = (date: Date) => {
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -60,11 +78,16 @@ const Calendar = () => {
     }
   };
 
+  const handleCellRightClick = (e: React.MouseEvent, timeSlot: string, dayIndex: number) => {
+    e.preventDefault();
+    setShowNewAppointment(true);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50">
         <AdminSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
@@ -86,10 +109,40 @@ const Calendar = () => {
                   <Share className="h-4 w-4 mr-2" />
                   Share
                 </Button>
-                <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600">
-                  <Plus className="h-4 w-4 mr-2" />
-                  New Appointment
-                </Button>
+                <Dialog open={showNewAppointment} onOpenChange={setShowNewAppointment}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600">
+                      <Plus className="h-4 w-4 mr-2" />
+                      New Appointment
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>New Appointment</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div>
+                        <Label htmlFor="title">Title</Label>
+                        <Input id="title" placeholder="Appointment title" />
+                      </div>
+                      <div>
+                        <Label htmlFor="patient">Patient</Label>
+                        <Input id="patient" placeholder="Patient name" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor="date">Date</Label>
+                          <Input id="date" type="date" />
+                        </div>
+                        <div>
+                          <Label htmlFor="time">Time</Label>
+                          <Input id="time" type="time" />
+                        </div>
+                      </div>
+                      <Button className="w-full">Create Appointment</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
 
@@ -169,15 +222,15 @@ const Calendar = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => navigateMonth('prev')}>
                             <ChevronLeft className="h-4 w-4" />
                           </Button>
                           <h2 className="text-xl font-semibold">{formatDate(selectedDate)}</h2>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" onClick={() => navigateMonth('next')}>
                             <ChevronRight className="h-4 w-4" />
                           </Button>
                         </div>
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" onClick={goToToday}>
                           Today
                         </Button>
                       </div>
@@ -218,7 +271,12 @@ const Calendar = () => {
                             {time}
                           </div>
                           {weekDays.map((day, dayIndex) => (
-                            <div key={`${time}-${day}`} className="p-2 border-r last:border-r-0 hover:bg-gray-50 relative">
+                            <div 
+                              key={`${time}-${day}`} 
+                              className="p-2 border-r last:border-r-0 hover:bg-gray-50 relative cursor-pointer"
+                              onContextMenu={(e) => handleCellRightClick(e, time, dayIndex)}
+                              onClick={() => setShowNewAppointment(true)}
+                            >
                               {appointments
                                 .filter(apt => apt.day === dayIndex && apt.time === time)
                                 .map(appointment => (
